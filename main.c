@@ -14,8 +14,7 @@
  * ===================================================================
  */
 
-#include <sys/socket.h>
-#include <netinet/in.h> // sockaddr_in структура.
+#include "utils.h"
 
 int main(void) {
 	int sock_fd;
@@ -51,10 +50,10 @@ int main(void) {
 	//
 	// protocol - конкретно используемый протокол. Мы рассматриваем потоковое
 	// TCP/IP соединение, так что протокол можно не определять.
-	if((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-		return(-1);
+	if ((sock_fd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
+		fatal();
 
-	// decl: bind(int socket, const struct sockaddr *address, socklen_t address_len);
+	// decl: int bind(int socket, const struct sockaddr *address, socklen_t address_len);
 	// 
 	// Для того, чтобы с сокетом мог установить соединение другой участник сетевого
 	// взаимодействия, то этому сокету следует выдать адрес c помощью bind.
@@ -64,9 +63,20 @@ int main(void) {
 	// address - указатель на структуру, содержащую адрес.
 	//
 	// address_len - размер структуры адреса в байтах.
-	if((bind(sock_fd, (const struct sockaddr *)servaddr, sizeof(servaddr))) < 0)
-		return(-1);
+	if ((bind(sock_fd, (const struct sockaddr *)servaddr, sizeof(servaddr))) < 0)
+		fatal();
 
+	// decl: int listen(int socket, int backlog);
+	//
+	// После создания сокета, переводим его в слушающий режим.
+	// Этот сокет будет предназначен искючительно для запросы соединения.
+	// Поэтому ядро ОС самостоятельно будет создавать доп. сокет для
+	// взаимодействия с клиентом. (Наша программа в данный момент серверная).
+	// 
+	// socket - дескриптор сокета.
+	// backlog - размер очереди непринятых запросов.
+	if (listen(sock_fd, 0) < 0)
+		fatal();
 
 	return (0);
 }
