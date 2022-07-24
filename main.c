@@ -16,6 +16,9 @@
 
 #include "utils.h"
 
+t_client *g_clients = NULL;
+int sock_fd, g_id = 0;
+
 int main(void) {
 	int sock_fd;
 
@@ -31,13 +34,13 @@ int main(void) {
 	bzero(&servaddr, sizeof(servaddr)); // Занулили стркутуру.
 
 	// htol, htons
-	// n - network, то есть сетевой порядок байтов.
 	// h - host, порядок байтов этой машины.
+	// to - конвертируем в сетевой порядок (избегаем little/big endian отличий)
+	// n - network, то есть сетевой порядок байтов.
 	// s - короткие целые числа (short - 16 бит).
 	// l - long (32 бит).
-
 	servaddr.sin_family = AF_INET; // Работаем с протоколами TCP/IP
-	servaddr.sin_addr.s_addr = htol(2130706433); // 127.0.0.1
+	servaddr.sin_addr.s_addr = htonl(2130706433); // 127.0.0.1
 	servaddr.sin_port = htons(80);
 
 	// decl: int socket(int family, int type, int protocol);
@@ -63,7 +66,7 @@ int main(void) {
 	// address - указатель на структуру, содержащую адрес.
 	//
 	// address_len - размер структуры адреса в байтах.
-	if ((bind(sock_fd, (const struct sockaddr *)servaddr, sizeof(servaddr))) < 0)
+	if ((bind(sock_fd, (const struct sockaddr *)&servaddr, sizeof(servaddr))) < 0)
 		fatal();
 
 	// decl: int listen(int socket, int backlog);

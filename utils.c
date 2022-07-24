@@ -21,6 +21,3 @@ void fatal() {
 	close(sock_fd);
 	exit(1);
 }
-
-
-

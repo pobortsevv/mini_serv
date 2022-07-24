@@ -19,6 +19,9 @@
 
 # include <sys/socket.h>
 # include <netinet/in.h> // sockaddr_in структура.
+# include <unistd.h>
+# include <strings.h>
+# include <stdlib.h>
 
 // Наш сервер будет принимать подключение нескольких клиентов.
 // Так что будем хранить их в связанном списке.
@@ -31,6 +34,10 @@ typedef struct	s_client {
 	int id;
 	struct s_client *next;
 }								t_client;
+
+extern int sock_fd; // Дескриптор слушающего сокета
+extern int g_id; // Глобальный счётчик клиентов
+extern t_client *g_clients; // Связанный список клиентов
 
 void fatal(void); // Вызываем при системных ошибках (внутри закрывается слушающий сокет)
 
